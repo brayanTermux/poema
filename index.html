@@ -1,0 +1,150 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Poemas</title>
+  <style>
+    body {
+      background-color: #fdf6f0;
+      font-family: Georgia, serif;
+      text-align: center;
+      padding: 50px 20px;
+      margin: 0;
+    }
+
+    nav {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+    }
+
+    nav a {
+      text-decoration: none;
+      font-size: 16px;
+      background-color: #c94f7c;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-family: Georgia, serif;
+      transition: background-color 0.3s;
+    }
+
+    nav a:hover {
+      background-color: #e96e96;
+    }
+
+    h1 {
+      color: #c94f7c;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 18px;
+      color: #555;
+    }
+
+    .poema {
+      margin-top: 30px;
+      font-size: 20px;
+      color: #444;
+      white-space: pre-line;
+    }
+
+    button {
+      background-color: #c94f7c;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #e96e96;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="historico.html">Histórico 📜</a>
+  </nav>
+
+  <h1>Gerador de Poemas </h1>
+  <p>Clique no botão para receber um pequeno poema por dia:</p>
+  <button onclick="gerarPoema()">Gerar 💌</button>
+
+  <div class="poema" id="poema"></div>
+
+  <script>
+    const poemas = [
+      `Entre as estrelas encontrei seu olhar,\nTão doce quanto o luar a brilhar.\nNo silêncio da noite serena,\nVocê é minha mais linda cena.`,
+      `Se o amor fosse uma flor,\nVocê seria o jardim inteiro.\nTão cheia de cor e calor,\nMeu eterno paradeiro.`,
+      `Seu sorriso é minha poesia,\nSeu abraço, minha canção.\nCom você, todo dia\nÉ verso em meu coração.`,
+      `Te ver é como primavera,\nColorindo o que era cinza.\nVocê é a minha quimera,\nMeu sonho que nunca finda.`,
+      `O mundo pode mudar,\nMas o que sinto não.\nVocê é meu lugar,\nMeu porto, meu coração.`
+    ];
+
+    function gerarPoema() {
+      const hoje = new Date().toDateString();
+      const ultimaData = localStorage.getItem("dataPoema");
+
+      if (ultimaData === hoje) {
+        alert("Você já recebeu um poema hoje. Volte amanhã! 💌");
+        return;
+      }
+
+      const aleatorio = Math.floor(Math.random() * poemas.length);
+      const poema = poemas[aleatorio];
+
+      document.getElementById("poema").innerText = poema;
+      localStorage.setItem("dataPoema", hoje);
+      localStorage.setItem("poemaHoje", poema);
+
+      let historico = JSON.parse(localStorage.getItem("historicoPoemas") || "[]");
+      historico.push({ data: hoje, texto: poema });
+      localStorage.setItem("historicoPoemas", JSON.stringify(historico));
+    }
+
+    window.onload = function () {
+      const hoje = new Date().toDateString();
+      const ultimaData = localStorage.getItem("dataPoema");
+      const poemaMostrado = localStorage.getItem("poemaHoje");
+
+      if (ultimaData === hoje && poemaMostrado) {
+        document.getElementById("poema").innerText = poemaMostrado;
+      }
+    };
+  </script>
+
+</body>
+</html>
+
+<!-- historico.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Histórico de Poemas 📜</title>
+  <style>
+    body {
+      background-color: #fdf6f0;
+      font-family: Georgia, serif;
+      padding: 40px 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #c94f7c;
+      margin-bottom: 30px;
+    }
+
+    .poema {
+      margin-bottom: 30px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 20px
