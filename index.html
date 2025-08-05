@@ -1,150 +1,204 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Poemas</title>
+  <title>Gerador de Poemas</title>
   <style>
     body {
-      background-color: #fdf6f0;
-      font-family: Georgia, serif;
-      text-align: center;
-      padding: 50px 20px;
+      font-family: 'Georgia', serif;
+      background: linear-gradient(to bottom right, #fff0f5, #ffffff);
       margin: 0;
+      padding: 0;
     }
-
+    header {
+      background-color: #ffb6c1;
+      color: white;
+      padding: 15px 30px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    header h2 {
+      margin: 0;
+      font-size: 26px;
+      color: #c71585;
+    }
     nav {
-      position: absolute;
-      top: 20px;
-      right: 30px;
+      margin-top: 10px;
     }
-
     nav a {
+      color: #ffffff;
+      margin: 0 15px;
       text-decoration: none;
-      font-size: 16px;
-      background-color: #c94f7c;
-      color: white;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-family: Georgia, serif;
-      transition: background-color 0.3s;
+      font-weight: bold;
     }
-
     nav a:hover {
-      background-color: #e96e96;
+      text-decoration: underline;
     }
-
-    h1 {
-      color: #c94f7c;
-      margin-bottom: 10px;
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
     }
-
-    p {
-      font-size: 18px;
-      color: #555;
-    }
-
-    .poema {
-      margin-top: 30px;
-      font-size: 20px;
-      color: #444;
-      white-space: pre-line;
-    }
-
     button {
-      background-color: #c94f7c;
-      color: white;
-      padding: 10px 20px;
+      padding: 12px 20px;
       font-size: 16px;
-      border: none;
-      border-radius: 8px;
       cursor: pointer;
-      margin-top: 20px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 20px;
+      background-color: #ff69b4;
+      color: white;
+      transition: background-color 0.3s ease;
     }
-
     button:hover {
-      background-color: #e96e96;
+      background-color: #ff1493;
+    }
+    .favoritar {
+      color: #c71585;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    #poema {
+      white-space: pre-wrap;
+      margin: 20px 0;
+      min-height: 100px;
+      font-size: 18px;
+      line-height: 1.6;
+      color: #c71585;
+    }
+    #streak {
+      font-weight: bold;
+      color: #c71585;
+    }
+    h3 {
+      color: #c71585;
+    }
+    #historico, #favoritos {
+      margin-top: 30px;
+      padding-top: 10px;
+      border-top: 1px solid #ccc;
     }
   </style>
 </head>
 <body>
+  <header>
+    <h2>Gerador de Poemas</h2>
+    <nav>
+      <a href="#" onclick="mostrarHistorico()">📜 Histórico</a>
+      <a href="#" onclick="mostrarFavoritos()">❤️ Favoritos</a>
+    </nav>
+  </header>
 
-  <nav>
-    <a href="historico.html">Histórico 📜</a>
-  </nav>
-
-  <h1>Gerador de Poemas </h1>
-  <p>Clique no botão para receber um pequeno poema por dia:</p>
-  <button onclick="gerarPoema()">Gerar 💌</button>
-
-  <div class="poema" id="poema"></div>
+  <div class="container">
+    <p id="streak"></p>
+    <div id="poema"></div>
+    <button onclick="gerarPoema()">Gerar poema do dia</button>
+    <button class="favoritar" onclick="favoritarPoema()">❤️</button>
+    <div id="historico" style="display:none;"></div>
+    <div id="favoritos" style="display:none;"></div>
+  </div>
 
   <script>
     const poemas = [
-      `Entre as estrelas encontrei seu olhar,\nTão doce quanto o luar a brilhar.\nNo silêncio da noite serena,\nVocê é minha mais linda cena.`,
-      `Se o amor fosse uma flor,\nVocê seria o jardim inteiro.\nTão cheia de cor e calor,\nMeu eterno paradeiro.`,
-      `Seu sorriso é minha poesia,\nSeu abraço, minha canção.\nCom você, todo dia\nÉ verso em meu coração.`,
-      `Te ver é como primavera,\nColorindo o que era cinza.\nVocê é a minha quimera,\nMeu sonho que nunca finda.`,
-      `O mundo pode mudar,\nMas o que sinto não.\nVocê é meu lugar,\nMeu porto, meu coração.`
+      "No silêncio da noite fria,\nBrota a alma da poesia.",
+      "As estrelas no céu brilham,\nComo versos que não se calam.",
+      "O vento sopra no peito,\nVersos saem sem defeito.",
+      "Entre folhas e lembranças,\nVivem antigas esperanças.",
+      "Chuva cai como canção,\nMolha fundo o coração."
     ];
+
+    let poemaAtual = "";
+
+    function animarTexto(texto, elementoId, callback) {
+      const el = document.getElementById(elementoId);
+      el.textContent = "";
+      let i = 0;
+      const timer = setInterval(() => {
+        el.textContent += texto.charAt(i);
+        i++;
+        if (i >= texto.length) {
+          clearInterval(timer);
+          if (callback) callback();
+        }
+      }, 40);
+    }
 
     function gerarPoema() {
       const hoje = new Date().toDateString();
-      const ultimaData = localStorage.getItem("dataPoema");
-
-      if (ultimaData === hoje) {
-        alert("Você já recebeu um poema hoje. Volte amanhã! 💌");
+      if (localStorage.getItem('ultimoPoemaDia') === hoje) {
+        alert("Você já gerou o poema de hoje, bobinha!");
         return;
       }
+      const poema = poemas[Math.floor(Math.random() * poemas.length)];
+      poemaAtual = poema;
+      animarTexto(poema, "poema");
+      salvarHistorico(hoje, poema);
+      localStorage.setItem('ultimoPoemaDia', hoje);
+      atualizarStreak();
+    }
 
-      const aleatorio = Math.floor(Math.random() * poemas.length);
-      const poema = poemas[aleatorio];
-
-      document.getElementById("poema").innerText = poema;
-      localStorage.setItem("dataPoema", hoje);
-      localStorage.setItem("poemaHoje", poema);
-
-      let historico = JSON.parse(localStorage.getItem("historicoPoemas") || "[]");
-      historico.push({ data: hoje, texto: poema });
+    function salvarHistorico(data, poema) {
+      const historico = JSON.parse(localStorage.getItem("historicoPoemas") || "[]");
+      historico.push({ data, poema });
       localStorage.setItem("historicoPoemas", JSON.stringify(historico));
     }
 
-    window.onload = function () {
-      const hoje = new Date().toDateString();
-      const ultimaData = localStorage.getItem("dataPoema");
-      const poemaMostrado = localStorage.getItem("poemaHoje");
+    function mostrarHistorico() {
+      const div = document.getElementById("historico");
+      const fav = document.getElementById("favoritos");
+      fav.style.display = "none";
+      const historico = JSON.parse(localStorage.getItem("historicoPoemas") || "[]");
+      div.innerHTML = "<h3>Histórico de Poemas</h3>" + historico.map(p => `<p><strong>${p.data}</strong>:<br>${p.poema}</p>`).join('');
+      div.style.display = "block";
+    }
 
-      if (ultimaData === hoje && poemaMostrado) {
-        document.getElementById("poema").innerText = poemaMostrado;
+    function favoritarPoema() {
+      if (!poemaAtual) return alert("Nenhum poema para favoritar.");
+      const favoritos = JSON.parse(localStorage.getItem("poemasFavoritos") || "[]");
+      if (!favoritos.includes(poemaAtual)) {
+        favoritos.push(poemaAtual);
+        localStorage.setItem("poemasFavoritos", JSON.stringify(favoritos));
+        alert("Poema adicionado aos favoritos!");
+      } else {
+        alert("Esse poema já está nos favoritos!");
       }
-    };
-  </script>
+    }
 
+    function mostrarFavoritos() {
+      const div = document.getElementById("favoritos");
+      const hist = document.getElementById("historico");
+      hist.style.display = "none";
+      const favoritos = JSON.parse(localStorage.getItem("poemasFavoritos") || "[]");
+      div.innerHTML = "<h3>Poemas Favoritos</h3>" + favoritos.map(p => `<p>${p}</p>`).join('');
+      div.style.display = "block";
+    }
+
+    function atualizarStreak() {
+      const hoje = new Date().toDateString();
+      const ultimoDia = localStorage.getItem("ultimoAcessoDia") || "";
+      let streak = parseInt(localStorage.getItem("diasSeguidos") || "0");
+      if (ultimoDia !== hoje) {
+        const ontem = new Date();
+        ontem.setDate(ontem.getDate() - 1);
+        if (ultimoDia === ontem.toDateString()) {
+          streak += 1;
+        } else {
+          streak = 1;
+        }
+        localStorage.setItem("diasSeguidos", streak);
+        localStorage.setItem("ultimoAcessoDia", hoje);
+      }
+      document.getElementById("streak").textContent = `Dias seguidos gerando poemas: ${streak}`;
+    }
+
+    atualizarStreak();
+  </script>
 </body>
 </html>
-
-<!-- historico.html -->
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <title>Histórico de Poemas 📜</title>
-  <style>
-    body {
-      background-color: #fdf6f0;
-      font-family: Georgia, serif;
-      padding: 40px 20px;
-      max-width: 800px;
-      margin: auto;
-    }
-
-    h1 {
-      text-align: center;
-      color: #c94f7c;
-      margin-bottom: 30px;
-    }
-
-    .poema {
-      margin-bottom: 30px;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 20px
